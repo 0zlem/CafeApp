@@ -1,0 +1,6 @@
+@CafeApp.WebAPI_HostAddress = http://localhost:5134
+
+GET http://localhost:5134/weatherforecast/
+Accept: application/json
+
+###

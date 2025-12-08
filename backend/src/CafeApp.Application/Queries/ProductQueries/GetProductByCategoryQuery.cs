@@ -34,20 +34,23 @@ namespace CafeApp.Application.Queries.ProductQueries
             GetProductByCategoryQuery request,
             CancellationToken cancellationToken)
         {
+
             var products = await productRepository
-                .Where(p => p.CategoryId == request.CategoryId)
-                .Select(p => new ProductDto(
-                    p.Id,
-                    p.Name,
-                    p.Description,
-                    p.Price,
-                    p.Stock,
-                    p.CategoryId,
-                    p.Category!.Name,
-                    p.ImageUrl,
-                    p.IsAvailable
-                ))
-                .ToListAsync(cancellationToken);
+                           .Where(p => p.CategoryId == request.CategoryId)
+                           .Include(p => p.Category)
+                           .Select(p => new ProductDto(
+          p.Id,
+          p.Name,
+          p.Description,
+          p.Price,
+          p.Stock,
+          p.CategoryId,
+          p.Category!.Name,
+          p.ImageUrl,
+          p.IsAvailable
+                          ))
+      .ToListAsync(cancellationToken);
+
 
             return Result<List<ProductDto>>.Succeed(products);
         }

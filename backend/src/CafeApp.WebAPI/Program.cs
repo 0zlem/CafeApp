@@ -16,9 +16,23 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowNext",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
+
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
+
+app.UseCors("AllowNext");
 
 app.UseHttpsRedirection();
 

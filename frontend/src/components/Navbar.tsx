@@ -28,17 +28,18 @@ export default function Navbar() {
 
   return (
     <div className="w-full flex flex-col items-center gap-2 p-3">
-      {/* ÜST NAV */}
       <div className="w-full flex justify-between items-center px-2">
-        <img
-          src="/logo2.png"
-          alt="/logo.png"
-          width={70}
-          height={70}
-          className="shrink-0"
-        />
+        <Link href={"/"}>
+          {" "}
+          <img
+            src="/logo1.png"
+            alt="/logo.png"
+            width={70}
+            height={70}
+            className="shrink-0"
+          />
+        </Link>
 
-        {/* Desktop menü */}
         <Menubar className="hidden md:flex bg-[#483c32] text-white h-14 gap-4 px-4 rounded-xl">
           {categories.map((cat) => (
             <MenubarMenu key={cat.id}>
@@ -49,11 +50,15 @@ export default function Navbar() {
           ))}
         </Menubar>
 
-        {/* Sepet butonu (sağda) */}
         <Drawer>
-          <DrawerTrigger className="flex items-center gap-3 bg-[#483c32] text-white font-bold text-md h-10 px-4 rounded-2xl shadow-lg">
-            <ShoppingCartIcon />
-            <span>{totalQuantity}</span>
+          <DrawerTrigger className="flex items-center gap-3 bg-[#483c32] text-white font-bold text-md h-10 px-4 rounded-2xl shadow-lg relative">
+            <div className="relative">
+              <ShoppingCartIcon className="text-white" />
+
+              <span className="absolute -top-1 -right-2 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {totalQuantity}
+              </span>
+            </div>
           </DrawerTrigger>
 
           <DrawerContent className="p-4">
@@ -113,9 +118,14 @@ export default function Navbar() {
                 Once the order is created, you can pay later at the checkout.
                 Enjoy!
               </span>
-              <Button className="w-full bg-yellow-400 text-black hover:bg-yellow-300 font-bold py-6 text-lg rounded-2xl">
-                Proceed to Checkout
-              </Button>
+              <Link href="/orders" className="w-full">
+                <Button
+                  type="button"
+                  className="w-full bg-yellow-400 text-black hover:bg-yellow-300 font-bold py-6 text-lg rounded-2xl"
+                >
+                  Proceed to Checkout
+                </Button>
+              </Link>
 
               <DrawerClose asChild>
                 <Button variant="outline" className="w-full">
@@ -127,7 +137,6 @@ export default function Navbar() {
         </Drawer>
       </div>
 
-      {/* Mobil kategori menüsü — yatay scroll */}
       <div className="md:hidden w-full overflow-x-auto flex gap-4 p-2 bg-[#483c32] text-white rounded-xl scrollbar-none">
         {categories.map((cat) => (
           <Link

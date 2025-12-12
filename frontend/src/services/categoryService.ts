@@ -11,3 +11,37 @@ export const getCategoryById = async (id: string) => {
   const response = await axios.get(`${CATEGORY_URL}/${id}`);
   return response.data.data;
 };
+
+export const addCategory = async (data: { name: string }) => {
+  const token = localStorage.getItem("token");
+
+  return await axios.post(
+    `${CATEGORY_URL}/create`,
+    { Name: data.name },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+export const updateCategory = async (data: { id: string; name: string }) => {
+  const token = localStorage.getItem("token");
+
+  return await axios.put(
+    `${CATEGORY_URL}/update`,
+    {
+      Id: data.id,
+      Name: data.name,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+
+

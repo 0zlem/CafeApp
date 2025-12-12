@@ -5,10 +5,10 @@ const API_URL = "http://localhost:5134/products";
 export const getProducts = async () => {
   try {
     const response = await axios.get(API_URL);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      throw error.response?.data || error.message;
+      throw error.response?.data.data || error.message;
     }
     throw error;
   }

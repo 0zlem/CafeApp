@@ -51,7 +51,7 @@ export default function AddCategory({ onSubmit }: any) {
   };
 
   return (
-    <div className="m-5 p-5 rounded-lg shadow-lg shadow-stone-800 bg-[#fff6cc]">
+    <div className="m-5 p-5 rounded-lg shadow-lg shadow-stone-800 bg-[#fff6cc] w-[550px]">
       <div>
         <h1 className="text-center mb-2 font-bold text-xl">Add Category</h1>
       </div>

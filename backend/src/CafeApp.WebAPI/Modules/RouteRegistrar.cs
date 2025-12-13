@@ -15,6 +15,7 @@ namespace CafeApp.WebAPI.Modules
             app.RegisterOrderRoutes();
             app.RegisterProductRoutes();
             app.RegisterTableRoutes();
+            app.RegisterFileRoutes();
 
         }
     }

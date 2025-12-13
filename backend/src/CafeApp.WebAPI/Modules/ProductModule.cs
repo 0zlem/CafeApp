@@ -17,12 +17,12 @@ namespace CafeApp.WebAPI.Modules
             var groupBuilder = app.MapGroup("/products").WithTags("Products");
 
             groupBuilder.MapPost("/create", async (ISender sender, CreateProductCommand request, CancellationToken cancellationToken) =>
-          {
-              var response = await sender.Send(request, cancellationToken);
+            {
+                var response = await sender.Send(request, cancellationToken);
 
-              return response.IsSuccessful ? Results.Ok(response) : Results.BadRequest(response);
+                return response.IsSuccessful ? Results.Ok(response) : Results.BadRequest(response);
 
-          }).Produces<Result<string>>();
+            }).Produces<Result<string>>();
 
             groupBuilder.MapPut("/update", async (ISender sender, UpdateProductCommand request, CancellationToken cancellationToken) =>
             {
@@ -41,12 +41,12 @@ namespace CafeApp.WebAPI.Modules
             });
 
             groupBuilder.MapGet("", async (ISender sender, CancellationToken cancellationToken) =>
-           {
-               var response = await sender.Send(new GetAllProductsQuery(), cancellationToken);
+            {
+                var response = await sender.Send(new GetAllProductsQuery(), cancellationToken);
 
-               return response.IsSuccessful ? Results.Ok(response) : Results.BadRequest(response);
+                return response.IsSuccessful ? Results.Ok(response) : Results.BadRequest(response);
 
-           }).Produces<Result<List<Product>>>();
+            }).Produces<Result<List<Product>>>();
 
             groupBuilder.MapGet("/{id:guid}", async (ISender sender, Guid id, CancellationToken cancellationToken) =>
             {

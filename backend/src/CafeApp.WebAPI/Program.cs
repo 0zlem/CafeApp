@@ -34,7 +34,9 @@ var app = builder.Build();
 
 app.UseCors("AllowNext");
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
+
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();

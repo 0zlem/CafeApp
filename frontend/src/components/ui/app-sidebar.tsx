@@ -1,8 +1,7 @@
 import {
-  Calendar,
   ChartColumnStacked,
   Home,
-  Inbox,
+  PackageSearch,
   Search,
   Settings,
 } from "lucide-react";
@@ -22,11 +21,6 @@ import { NavUser } from "./nav-user";
 import Link from "next/link";
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   items: [
     {
       title: "Dashboard",
@@ -39,9 +33,9 @@ const data = {
       icon: ChartColumnStacked,
     },
     {
-      title: "Calendar",
-      url: "#",
-      icon: Calendar,
+      title: "Products",
+      url: "/products",
+      icon: PackageSearch,
     },
     {
       title: "Search",
@@ -92,7 +86,7 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="bg-[#fff6cc]">
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );

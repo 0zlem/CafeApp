@@ -55,7 +55,7 @@ export default function Home() {
             </div>
 
             <img
-              src={item.imageUrl}
+              src={`http://localhost:5134${item.imageUrl}`}
               alt={item.name}
               width={150}
               height={150}

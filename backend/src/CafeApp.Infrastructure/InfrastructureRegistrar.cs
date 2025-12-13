@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CafeApp.Application.Interfaces;
 using CafeApp.Application.Services;
 using CafeApp.Infrastructure.Context;
 using CafeApp.Infrastructure.Options;
@@ -29,6 +30,7 @@ namespace CafeApp.Infrastructure
             services.ConfigureOptions<JwtOptionsSetup>();
 
             services.AddScoped<IJwtProvider, JwtProvider>();
+            services.AddScoped<IFileRepository, FileRepository>();
 
             services.AddAuthentication(opt =>
             {

@@ -25,3 +25,25 @@ export const getProductsByCategory = async (categoryId: string) => {
     throw error;
   }
 };
+
+export const addProduct = async (data: {
+  name: string;
+  description?: string;
+  price: number;
+  stock: number;
+  categoryId: string;
+  imageUrl?: string;
+  isAvailable: boolean;
+}) => {
+  const token = localStorage.getItem("token");
+  const response = await axios.post(
+    `${API_URL}/create`,
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response.data;
+};

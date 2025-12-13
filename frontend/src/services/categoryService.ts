@@ -26,7 +26,7 @@ export const addCategory = async (data: { name: string }) => {
   );
 };
 
-export const updateCategory = async (data: { id: string; name: string }) => {
+export const updateCategory = async (data: { id: string; name: string; }) => {
   const token = localStorage.getItem("token");
 
   return await axios.put(
@@ -42,6 +42,18 @@ export const updateCategory = async (data: { id: string; name: string }) => {
     }
   );
 };
+
+export const deleteCategory = async (id: string) => {
+  const token = localStorage.getItem("token");
+
+  return await axios.delete(`${CATEGORY_URL}/delete/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+
 
 
 

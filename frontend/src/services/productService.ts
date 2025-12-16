@@ -47,3 +47,48 @@ export const addProduct = async (data: {
   );
   return response.data;
 };
+
+export const updateProduct = async (data: {
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+  stock: number;
+  categoryId: string;
+  imageUrl?: string;
+  isAvailable: boolean;
+}) => {
+  const token = localStorage.getItem("token");
+
+  const response = await axios.put(
+    `${API_URL}/update`,
+    {
+      id: data.id,
+      name: data.name,
+      description: data.description,
+      price: data.price,
+      stock: data.stock,
+      categoryId: data.categoryId,
+      imageUrl: data.imageUrl,
+      isAvailable: data.isAvailable,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+};
+
+
+export const deleteProduct = async (id: string) => {
+  const token = localStorage.getItem("token");
+
+  return await axios.delete(`${API_URL}/delete/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

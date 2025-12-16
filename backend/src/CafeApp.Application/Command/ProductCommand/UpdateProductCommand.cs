@@ -27,7 +27,7 @@ namespace CafeApp.Application.Command.ProductCommand
         {
             var httpContext = httpContextAccessor.HttpContext;
             var userRole = httpContext?.User.FindFirstValue(ClaimTypes.Role);
-            if (userRole != UserRole.Garson.ToString())
+            if (userRole != UserRole.Admin.ToString())
                 return Result<string>.Failure("Bu işlem için admin yetkisine sahip olmalısınız!");
 
             var product = await productRepository.FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);

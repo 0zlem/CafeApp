@@ -2,7 +2,7 @@
 import { useCart } from "@/components/CardContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { getProducts } from "@/services/productService";
+import { getProducts } from "@/services/ProductService";
 import { useEffect, useState } from "react";
 import { MdAddShoppingCart } from "react-icons/md";
 

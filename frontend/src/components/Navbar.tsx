@@ -1,6 +1,5 @@
 "use client";
 import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
-import { getCategories } from "@/services/categoryService";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -16,15 +15,24 @@ import { Button } from "./ui/button";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCartOutlined";
 import { IoMdAdd, IoMdRemove } from "react-icons/io";
 import { useCart } from "./CardContext";
+import { useRouter } from "next/navigation";
+import { getCategories } from "@/services/CategoryService";
 
 export default function Navbar() {
   const [categories, setCategories] = useState<any[]>([]);
   const { cart, addToCart, removeFromCart, totalPrice } = useCart();
   const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const router = useRouter();
 
   useEffect(() => {
     getCategories().then((data) => setCategories(data));
   }, []);
+
+  const addOrders = async () => {
+    if (totalQuantity != 0) {
+      router.push("/orders");
+    }
+  };
 
   return (
     <div className="w-full flex flex-col items-center gap-2 p-3">
@@ -51,7 +59,7 @@ export default function Navbar() {
         </Menubar>
 
         <Drawer>
-          <DrawerTrigger className="flex items-center gap-3 bg-[#483c32] text-white font-bold text-md h-10 px-4 rounded-2xl shadow-lg relative">
+          <DrawerTrigger className="flex items-center gap-3 bg-[#483c32] text-white font-bold text-md h-10 px-4 rounded-2xl shadow-lg relative cursor-pointer">
             <div className="relative">
               <ShoppingCartIcon className="text-white" />
 
@@ -121,14 +129,14 @@ export default function Navbar() {
               <Link href="/orders" className="w-full">
                 <Button
                   type="button"
-                  className="w-full bg-yellow-400 text-black hover:bg-yellow-300 font-bold py-6 text-lg rounded-2xl"
+                  className="w-full bg-yellow-400 text-black hover:bg-yellow-300 font-bold py-6 text-lg rounded-2xl cursor-pointer"
                 >
                   Proceed to Checkout
                 </Button>
               </Link>
 
               <DrawerClose asChild>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full cursor-pointer">
                   Cancel
                 </Button>
               </DrawerClose>

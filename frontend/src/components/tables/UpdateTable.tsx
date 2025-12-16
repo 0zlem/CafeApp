@@ -22,16 +22,15 @@ import {
 } from "../ui/select";
 import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
+import { getTables, updateTable } from "@/services/TableService";
 
 const formSchema = z.object({
-  id: z.string().min(1, "You should select category!"),
+  id: z.string().min(1, "You should select table!"),
   name: z.string().min(1, "New name is must not empty!"),
 });
 
-export default function UpdateCategory() {
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
-    []
-  );
+export default function UpdateTable() {
+  const [tables, setTables] = useState<{ id: string; name: string }[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -39,43 +38,43 @@ export default function UpdateCategory() {
   });
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchTables = async () => {
       try {
-        const categories = await getCategories();
-        setCategories(categories || []);
+        const table = await getTables();
+        setTables(table || []);
       } catch (err) {
-        console.error("Error fetching categories:", err);
-        setCategories([]);
+        console.error("Error fetching tables:", err);
+        setTables([]);
       }
     };
-    fetchCategories();
+    fetchTables();
   }, []);
 
-  const handleSelectCategory = (id: string) => {
+  const handleSelectTable = (id: string) => {
     form.setValue("id", id);
-    const selected = categories.find((c) => c.id === id);
+    const selected = tables.find((t) => t.id === id);
     form.setValue("name", selected?.name || "");
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await updateCategory(values);
-      toast.success("Category updated successfully!");
+      await updateTable(values);
+      toast.success("Table updated successfully!");
 
-      setCategories((prev) =>
-        prev.map((c) => (c.id === values.id ? { ...c, name: values.name } : c))
+      setTables((prev) =>
+        prev.map((t) => (t.id === values.id ? { ...t, name: values.name } : t))
       );
 
       form.reset();
     } catch (err) {
       console.error(err);
-      toast.error("An error occurred while updating the category.!");
+      toast.error("An error occurred while updating the table.!");
     }
   };
 
   return (
     <div className="m-5 p-5 rounded-lg shadow-lg shadow-stone-800 bg-[#fff6cc] w-[550px]">
-      <h1 className="text-center mb-4 font-bold text-xl">Update Category</h1>
+      <h1 className="text-center mb-4 font-bold text-xl">Update Table</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
@@ -83,19 +82,20 @@ export default function UpdateCategory() {
             name="id"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Category Name</FormLabel>
+                <FormLabel>Table Name</FormLabel>
                 <FormControl>
                   <Select
+                    key={field.value}
                     value={field.value}
-                    onValueChange={(val) => handleSelectCategory(val)}
+                    onValueChange={(val) => handleSelectTable(val)}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select category" />
+                      <SelectValue placeholder="Select table" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#fff9dc]">
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.name}
+                      {tables.map((table) => (
+                        <SelectItem key={table.id} value={table.id}>
+                          {table.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -111,9 +111,9 @@ export default function UpdateCategory() {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>New Category Name</FormLabel>
+                <FormLabel>New Table Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="New category name" {...field} />
+                  <Input placeholder="New table name" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

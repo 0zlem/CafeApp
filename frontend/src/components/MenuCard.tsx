@@ -1,8 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "./ui/button";
-import { IoIosAddCircle } from "react-icons/io";
 import { MdAddShoppingCart } from "react-icons/md";
-import { useState } from "react";
 import { useCart } from "./CardContext";
 
 export interface Product {
@@ -69,7 +67,7 @@ export default function MenuCard({
             </div>
 
             <img
-              src={item.imageUrl}
+              src={`http://localhost:5134${item.imageUrl}`}
               alt={item.name}
               width={150}
               height={150}

@@ -22,19 +22,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { getUser, login } from "@/services/AuthService";
+import { register } from "@/services/AuthService";
+import { toast } from "sonner";
 
 const formSchema = z.object({
+  fullname: z.string().min(2).max(80),
   username: z.string().min(2).max(50),
   password: z.string().min(6),
 });
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      fullname: "",
       username: "",
       password: "",
     },
@@ -42,18 +45,9 @@ export default function LoginPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const response = await login(values);
-
-      const token = response.data.accessToken;
-
-      localStorage.setItem("token", token);
-
-      const user = await getUser();
-
-      if (user?.role === "Admin") {
-        router.push("/admin/dashboard");
-        return;
-      }
+      await register(values);
+      toast.success("Registration successful!");
+      router.push("/login");
     } catch (err: any) {
       console.error("Hata:", err);
     }
@@ -62,17 +56,30 @@ export default function LoginPage() {
     <div className="flex items-center justify-center p-16">
       <Card className="w-full max-w-md shadow-2xl border border-[#483C32] text-[#483C32] bg-background gap-2">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Login</CardTitle>
+          <CardTitle className="text-2xl font-bold">Register</CardTitle>
           <CardDescription>Welcome!</CardDescription>
           <CardAction>
             <Button variant="link">
-              <Link href={"/register"}>Register</Link>
+              <Link href={"/login"}>Login</Link>
             </Button>
           </CardAction>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="fullname"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>FullName</FormLabel>
+                    <FormControl>
+                      <Input type="text" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="username"
@@ -103,7 +110,7 @@ export default function LoginPage() {
                 className="w-full bg-[#483C32] hover:bg-[#5a4d42] text-md cursor-pointer"
                 type="submit"
               >
-                Login
+                Register
               </Button>
             </form>
           </Form>

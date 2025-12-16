@@ -13,10 +13,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
-import { addCategory } from "@/services/CategoryService";
 import { toast } from "sonner";
+import { createTable } from "@/services/TableService";
 
-export default function AddCategory({ onSubmit }: any) {
+export default function AddTable({ onSubmit }: any) {
   const itemSchema = z.object({
     name: z.string().min(1, "Item Name cannot be empty."),
   });
@@ -40,20 +40,20 @@ export default function AddCategory({ onSubmit }: any) {
   const handleSubmit = async (data: any) => {
     try {
       for (const item of data.items) {
-        await addCategory({ name: item.name });
+        await createTable({ name: item.name });
       }
       form.reset();
-      toast.success("Categories added!");
+      toast.success("Tables added!");
     } catch (error) {
       console.error(error);
-      toast.error("Error adding categories.");
+      toast.error("Error adding tables.");
     }
   };
 
   return (
     <div className="m-5 p-5 rounded-lg shadow-lg shadow-stone-800 bg-[#fff6cc] w-[550px]">
       <div>
-        <h1 className="text-center mb-2 font-bold text-xl">Add Category</h1>
+        <h1 className="text-center mb-2 font-bold text-xl">Add Tables</h1>
       </div>
       <Form {...form}>
         <form

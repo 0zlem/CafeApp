@@ -24,8 +24,8 @@ import {
 } from "@/components/ui/select";
 
 import { toast } from "sonner";
-import { addProduct } from "@/services/productService";
-import { getCategories } from "@/services/categoryService";
+import { addProduct } from "@/services/ProductService";
+import { getCategories } from "@/services/CategoryService";
 import { uploadFile } from "@/services/FileService";
 
 const formSchema = z.object({
@@ -61,8 +61,6 @@ export default function AddProduct() {
 
   const handleSelectCategory = (categoryId: string) => {
     form.setValue("categoryId", categoryId);
-    const selected = categories.find((c) => c.id === categoryId);
-    form.setValue("name", selected?.name || "");
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -172,7 +170,7 @@ export default function AddProduct() {
                     value={field.value}
                     onValueChange={(val) => handleSelectCategory(val)}
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full cursor-pointer">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent className="bg-[#fff9dc]">
@@ -192,6 +190,7 @@ export default function AddProduct() {
           <div>
             <FormLabel>Product Image</FormLabel>
             <Input
+              className="cursor-pointer"
               type="file"
               accept="image/*"
               onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}

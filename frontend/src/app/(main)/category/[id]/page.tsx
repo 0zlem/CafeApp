@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getProductsByCategory } from "@/services/productService";
+import { getProductsByCategory } from "@/services/ProductService";
 import MenuCard, { Product } from "@/components/MenuCard";
 import { useParams } from "next/navigation";
 

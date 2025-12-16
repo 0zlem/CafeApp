@@ -4,6 +4,7 @@ import {
   PackageSearch,
   Search,
   Settings,
+  Table,
 } from "lucide-react";
 
 import {
@@ -38,9 +39,9 @@ const data = {
       icon: PackageSearch,
     },
     {
-      title: "Search",
-      url: "#",
-      icon: Search,
+      title: "Tables",
+      url: "/tables",
+      icon: Table,
     },
     {
       title: "Settings",

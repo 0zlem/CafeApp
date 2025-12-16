@@ -19,51 +19,51 @@ import {
   SelectValue,
 } from "../ui/select";
 import { useEffect, useState } from "react";
-import { deleteProduct, getProducts } from "@/services/ProductService";
+import { deleteTable, getTables } from "@/services/TableService";
 
 const formSchema = z.object({
-  productId: z.string().min(1, "You should selected product!"),
+  tableId: z.string().min(1, "You should selected table!"),
 });
 
-export default function DeleteProduct() {
-  const [products, setProducts] = useState<{ id: string; name: string }[]>([]);
+export default function DeleteTable() {
+  const [tables, setTables] = useState<{ id: string; name: string }[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { productId: "" },
+    defaultValues: { tableId: "" },
   });
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchTables = async () => {
       try {
-        const product = await getProducts();
-        console.log("products fetched:", product);
-        setProducts(product || []);
+        const table = await getTables();
+        console.log("Tables fetched:", table);
+        setTables(table || []);
       } catch (err) {
-        console.error("Error fetching products:", err);
-        setProducts([]);
+        console.error("Error fetching tables:", err);
+        setTables([]);
       }
     };
-    fetchProducts();
+    fetchTables();
   }, []);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await deleteProduct(values.productId);
-      toast.success("Deleted product!");
-      setProducts((prev) => prev.filter((p) => p.id !== values.productId));
+      await deleteTable(values.tableId);
+      toast.success("Deleted table!");
+      setTables((prev) => prev.filter((t) => t.id !== values.tableId));
 
       form.reset();
     } catch (err) {
       console.error(err);
-      toast.error("An error occurred while deleting the product. !");
+      toast.error("An error occurred while deleting the table!");
     }
   };
 
   return (
     <div className="m-5 p-5 rounded-lg shadow-lg shadow-stone-800 bg-[#fff6cc] w-[550px]">
       <div>
-        <h1 className="text-center mb-2 font-bold text-xl">Delete Product</h1>
+        <h1 className="text-center mb-2 font-bold text-xl">Delete Table</h1>
       </div>
       <Form {...form}>
         <form
@@ -73,19 +73,19 @@ export default function DeleteProduct() {
           <div className="flex flex-col sm:flex-row gap-4 mb-4 p-4 border border-stone-800 rounded-md">
             <FormField
               control={form.control}
-              name="productId"
+              name="tableId"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>Select Product</FormLabel>
+                  <FormLabel>Select Table</FormLabel>
                   <FormControl>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="w-full cursor-pointer">
-                        <SelectValue placeholder="Select product" />
+                        <SelectValue placeholder="Select table" />
                       </SelectTrigger>
-                      <SelectContent className="bg-[#fff9dc]">
-                        {products.map((product) => (
-                          <SelectItem key={product.id} value={product.id}>
-                            {product.name}
+                      <SelectContent className="bg-[#fff9dc] cursor-pointer">
+                        {tables.map((t) => (
+                          <SelectItem key={t.id} value={t.id}>
+                            {t.name}
                           </SelectItem>
                         ))}
                       </SelectContent>

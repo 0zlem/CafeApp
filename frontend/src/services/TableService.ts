@@ -19,8 +19,6 @@ export const createTable = async (data: { name: string }) => {
   return response.data;
 };
 
-
-
 export const updateTable = async (data: {
   id: string;
   name: string;

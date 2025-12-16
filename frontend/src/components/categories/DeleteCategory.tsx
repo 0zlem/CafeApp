@@ -1,4 +1,3 @@
-"use client";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -59,7 +58,7 @@ export default function DeleteCategory() {
       form.reset();
     } catch (err) {
       console.error(err);
-      toast.error("Kategori silinirken hata oluştu!");
+      toast.error("An error occurred while deleting the category!");
     }
   };
 

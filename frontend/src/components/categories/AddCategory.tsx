@@ -1,4 +1,3 @@
-"use client";
 import { useForm, useFieldArray } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,7 +15,7 @@ import { Icon } from "@iconify/react";
 import { addCategory } from "@/services/CategoryService";
 import { toast } from "sonner";
 
-export default function AddCategory({ onSubmit }: any) {
+export default function AddCategory() {
   const itemSchema = z.object({
     name: z.string().min(1, "Item Name cannot be empty."),
   });

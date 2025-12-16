@@ -1,4 +1,3 @@
-"use client";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,7 +10,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { getCategories, updateCategory } from "@/services/CategoryService";
 import { toast } from "sonner";
 import {
   Select,

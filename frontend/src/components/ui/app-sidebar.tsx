@@ -5,6 +5,7 @@ import {
   Search,
   Settings,
   Table,
+  UserCog,
 } from "lucide-react";
 
 import {
@@ -44,9 +45,9 @@ const data = {
       icon: Table,
     },
     {
-      title: "Settings",
-      url: "#",
-      icon: Settings,
+      title: "User Settings",
+      url: "/users",
+      icon: UserCog,
     },
   ],
 };

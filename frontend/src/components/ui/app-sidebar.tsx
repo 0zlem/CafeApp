@@ -45,7 +45,7 @@ const data = {
       icon: Table,
     },
     {
-      title: "User Settings",
+      title: "Users",
       url: "/users",
       icon: UserCog,
     },

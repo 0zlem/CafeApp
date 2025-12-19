@@ -41,7 +41,8 @@ internal sealed class CreateTableCommandHandler(
 
         await tableRepository.AddAsync(table);
 
-        table.CodeQR = $"http://localhost:3000/scan?tableId={table.Id}";
+        table.CodeQR = $"http://192.168.1.103:3000/?tableId={table.Id}&tableName={table.Name}";
+
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

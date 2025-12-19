@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5134/tables";
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/tables`;
 
 
 export const createTable = async (data: { name: string }) => {

@@ -18,14 +18,28 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowNext",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:3000")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
+    options.AddPolicy("AllowNext", policy =>
+    {
+        policy
+            .SetIsOriginAllowed(origin =>
+            {
+                // localhost
+                if (origin.StartsWith("http://localhost"))
+                    return true;
+
+                // aynı ağdan gelen IP’ler (192.168.x.x, 10.x.x.x vs)
+                if (origin.StartsWith("http://192.168.") ||
+                    origin.StartsWith("http://10.") ||
+                    origin.StartsWith("http://172."))
+                    return true;
+
+                return false;
+            })
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
 });
+
 
 
 builder.Services.AddHttpContextAccessor();

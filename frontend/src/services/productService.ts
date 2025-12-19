@@ -1,6 +1,6 @@
 import axios from "axios"
 
-const API_URL = "http://localhost:5134/products"; 
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/products`;
 
 export const getProducts = async () => {
   try {

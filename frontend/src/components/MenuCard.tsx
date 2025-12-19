@@ -1,7 +1,10 @@
+"use client";
+
 import { Card } from "@/components/ui/card";
 import { Button } from "./ui/button";
 import { MdAddShoppingCart } from "react-icons/md";
 import { useCart } from "./CardContext";
+import { toast } from "sonner";
 
 export interface Product {
   id: string;
@@ -52,14 +55,15 @@ export default function MenuCard({
               <p className="font-semibold text-[#483C32]">{item.price} ₺</p>
 
               <Button
-                onClick={() =>
+                onClick={() => {
                   addToCart({
                     id: item.id,
                     name: item.name,
                     price: item.price,
                     imageUrl: item.imageUrl,
-                  })
-                }
+                  });
+                  toast.success("Ürün sepete eklendi", { duration: 800 });
+                }}
                 className="w-fit flex items-center gap-2 bg-[#483C32] px-3 py-1 rounded-xl shadow border border-[#e5dcc6] text-white cursor-pointer"
               >
                 Add <MdAddShoppingCart />
@@ -67,7 +71,7 @@ export default function MenuCard({
             </div>
 
             <img
-              src={`http://localhost:5134${item.imageUrl}`}
+              src={`${process.env.NEXT_PUBLIC_API_URL}${item.imageUrl}`}
               alt={item.name}
               width={150}
               height={150}

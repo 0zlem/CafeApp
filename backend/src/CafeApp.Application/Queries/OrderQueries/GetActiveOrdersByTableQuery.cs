@@ -11,21 +11,51 @@ using TS.Result;
 
 namespace CafeApp.Application.Queries.OrderQueries
 {
-    public sealed record GetActiveOrdersByTableQuery(Guid TableId) : IRequest<Result<List<Order>>>;
 
-    internal sealed class GetActiveOrdersByTableQueryHandler(IOrderRepository orderRepository) : IRequestHandler<GetActiveOrdersByTableQuery, Result<List<Order>>>
+
+    public sealed record GetActiveOrdersByTableQuery(Guid TableId) : IRequest<Result<ActiveOrderDto>>;
+    public sealed class ActiveOrderItemDto
     {
-        public async Task<Result<List<Order>>> Handle(GetActiveOrdersByTableQuery request, CancellationToken cancellationToken)
+        public string? ProductName { get; set; }
+        public int Quantity { get; set; }
+        public decimal Price { get; set; }
+    }
+
+    public sealed class ActiveOrderDto
+    {
+        public Guid Id { get; set; }
+        public int Status { get; set; }
+        public decimal TotalAmount { get; set; }
+        public List<ActiveOrderItemDto> Items { get; set; } = new();
+    }
+
+    internal sealed class GetActiveOrdersByTableQueryHandler(IOrderRepository orderRepository) : IRequestHandler<GetActiveOrdersByTableQuery, Result<ActiveOrderDto>>
+    {
+        public async Task<Result<ActiveOrderDto>> Handle(GetActiveOrdersByTableQuery request, CancellationToken cancellationToken)
         {
-            var orders = await orderRepository
-                .Where(o => o.TableId == request.TableId && o.Status != OrderStatus.Paid && o.Status != OrderStatus.Cancelled)
-                .Include(o => o.OrderItems)
-                .ToListAsync(cancellationToken);
+            var order = await orderRepository
+            .Where(o =>
+            o.TableId == request.TableId &&
+            o.Status != OrderStatus.Cancelled)
+            .Select(o => new ActiveOrderDto
+            {
+                Id = o.Id,
+                Status = (int)o.Status,
+                TotalAmount = o.TotalAmount,
+                Items = o.OrderItems.Select(i => new ActiveOrderItemDto
+                {
+                    ProductName = i.Product!.Name,
+                    Quantity = i.Quantity,
+                    Price = i.PriceAtOrder
+                }).ToList()
+            })
+            .FirstOrDefaultAsync(cancellationToken);
 
-            if (orders == null || !orders.Any())
-                return Result<List<Order>>.Failure("Aktif sipariş bulunamadı.");
 
-            return Result<List<Order>>.Succeed(orders);
+            if (order is null)
+                return Result<ActiveOrderDto>.Failure("Aktif sipariş bulunamadı.");
+
+            return Result<ActiveOrderDto>.Succeed(order);
         }
     }
 }

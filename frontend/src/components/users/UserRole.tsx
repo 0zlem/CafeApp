@@ -94,7 +94,7 @@ export default function UpdateUserRole() {
             name="userId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>User</FormLabel>
+                <FormLabel>Role - UserName</FormLabel>
                 <FormControl>
                   <Select value={field.value} onValueChange={handleSelectUser}>
                     <SelectTrigger className="w-full">
@@ -103,8 +103,7 @@ export default function UpdateUserRole() {
                     <SelectContent className="bg-[#fff9dc]">
                       {users.map((u) => (
                         <SelectItem key={u.id} value={u.id}>
-                          UserName: {u.userName.toUpperCase()} - FullName:{" "}
-                          {u.fullName.toUpperCase()}
+                          {u.role} - {u.userName.toUpperCase()}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -140,7 +139,7 @@ export default function UpdateUserRole() {
 
           <Button
             type="submit"
-            className="w-full bg-[#483C32] hover:bg-[#18130e]"
+            className="w-full bg-[#483C32] hover:bg-[#18130e] cursor-pointer"
           >
             Update Role
           </Button>

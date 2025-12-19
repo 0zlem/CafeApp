@@ -17,20 +17,58 @@ import { IoMdAdd, IoMdRemove } from "react-icons/io";
 import { useCart } from "./CardContext";
 import { useRouter } from "next/navigation";
 import { getCategories } from "@/services/CategoryService";
+import { toast } from "sonner";
+import { createOrder } from "@/services/OrderService";
 
 export default function Navbar() {
   const [categories, setCategories] = useState<any[]>([]);
-  const { cart, addToCart, removeFromCart, totalPrice } = useCart();
+  const { cart, addToCart, removeFromCart, resetCart, totalPrice } = useCart();
   const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
   const router = useRouter();
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     getCategories().then((data) => setCategories(data));
   }, []);
 
-  const addOrders = async () => {
-    if (totalQuantity != 0) {
+  const createOrders = async () => {
+    if (totalQuantity === 0) {
+      toast.error("Sepet boş!!!");
+      return;
+    }
+
+    try {
+      const tableId = localStorage.getItem("tableId");
+      if (!tableId) {
+        toast.error("Masa bilgisi bulunamadı!");
+        return;
+      }
+
+      const orderItems = cart.map((item) => ({
+        productId: item.id,
+        quantity: item.quantity,
+      }));
+
+      setOpen(false);
+
+      await toast.promise(
+        createOrder({
+          tableId,
+          items: orderItems,
+        }),
+        {
+          loading: "Sipariş oluşturuluyor...",
+          success: "Sipariş başarıyla oluşturuldu 🎉",
+          error: "Sipariş oluşturulamadı!",
+        }
+      );
+
+      resetCart();
       router.push("/orders");
+    } catch (error: any) {
+      toast.error(
+        typeof error === "string" ? error : "Sipariş oluşturulamadı!"
+      );
     }
   };
 
@@ -58,8 +96,11 @@ export default function Navbar() {
           ))}
         </Menubar>
 
-        <Drawer>
-          <DrawerTrigger className="flex items-center gap-3 bg-[#483c32] text-white font-bold text-md h-10 px-4 rounded-2xl shadow-lg relative cursor-pointer">
+        <Drawer open={open} onOpenChange={setOpen}>
+          <DrawerTrigger
+            onClick={() => setOpen(true)}
+            className="flex items-center gap-3 bg-[#483c32] text-white font-bold text-md h-10 px-4 rounded-2xl shadow-lg relative cursor-pointer"
+          >
             <div className="relative">
               <ShoppingCartIcon className="text-white" />
 
@@ -81,7 +122,7 @@ export default function Navbar() {
                   className="flex items-center gap-3 bg-[#fff6cc] p-3 rounded-xl shadow"
                 >
                   <img
-                    src={item.imageUrl}
+                    src={`${process.env.NEXT_PUBLIC_API_URL}${item.imageUrl}`}
                     className="w-14 h-14 rounded-xl object-cover"
                   />
 
@@ -99,14 +140,15 @@ export default function Navbar() {
                     </Button>
                     <span>{item.quantity}</span>
                     <Button
-                      onClick={() =>
+                      onClick={() => {
                         addToCart({
                           id: item.id,
                           name: item.name,
                           price: item.price,
                           imageUrl: item.imageUrl,
-                        })
-                      }
+                        });
+                        toast.success("Ürün sepete eklendi", { duration: 800 });
+                      }}
                       className="w-7 h-7 rounded-full bg-[#483c32] flex items-center justify-center"
                     >
                       <IoMdAdd />
@@ -126,14 +168,13 @@ export default function Navbar() {
                 Once the order is created, you can pay later at the checkout.
                 Enjoy!
               </span>
-              <Link href="/orders" className="w-full">
-                <Button
-                  type="button"
-                  className="w-full bg-yellow-400 text-black hover:bg-yellow-300 font-bold py-6 text-lg rounded-2xl cursor-pointer"
-                >
-                  Proceed to Checkout
-                </Button>
-              </Link>
+              <Button
+                onClick={createOrders}
+                type="button"
+                className="w-full bg-yellow-400 text-black hover:bg-yellow-300 font-bold py-6 text-lg rounded-2xl cursor-pointer"
+              >
+                Proceed to Checkout
+              </Button>
 
               <DrawerClose asChild>
                 <Button variant="outline" className="w-full cursor-pointer">

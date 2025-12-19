@@ -13,6 +13,7 @@ interface CartContextProps {
   cart: CartItem[];
   addToCart: (item: Omit<CartItem, "quantity">) => void;
   removeFromCart: (id: string) => void;
+  resetCart: () => void;
   totalPrice: number;
 }
 
@@ -41,6 +42,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   };
 
+  const resetCart = () => {
+    setCart([]);
+  };
+
   const totalPrice = cart.reduce(
     (total, item) => total + item.price * item.quantity,
     0
@@ -52,6 +57,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         cart,
         addToCart,
         removeFromCart,
+        resetCart,
         totalPrice,
       }}
     >

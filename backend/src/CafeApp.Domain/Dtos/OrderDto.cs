@@ -7,7 +7,7 @@ namespace CafeApp.Domain.Dtos
 {
     public sealed class OrderDto
     {
-        public string TableCode { get; set; } = null!;
+        public Guid TableId { get; set; }
         public List<OrderItemDto> Items { get; set; } = new();
     }
 

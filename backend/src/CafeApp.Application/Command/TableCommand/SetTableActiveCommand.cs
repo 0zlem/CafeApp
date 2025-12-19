@@ -28,7 +28,7 @@ namespace CafeApp.Application.Command.TableCommand
             }
 
             if (table.IsActive)
-                return Result<string>.Failure("Bu masa şu anda kullanımda. Lütfen birazdan tekrar deneyin.");
+                return Result<string>.Succeed("Bu masa şu anda kullanımda. Lütfen birazdan tekrar deneyin.");
 
             table.IsActive = true;
             table.UpdatedAt = DateTimeOffset.UtcNow;

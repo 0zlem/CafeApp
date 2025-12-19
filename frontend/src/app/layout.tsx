@@ -16,7 +16,15 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <main>{children}</main>
-        <Toaster />
+        <Toaster
+          richColors
+          theme="system"
+          toastOptions={{
+            style: {
+              color: "white",
+            },
+          }}
+        />
       </body>
     </html>
   );

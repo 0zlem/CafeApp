@@ -9,7 +9,7 @@ namespace CafeApp.Domain.Entities
     {
         public Guid Id { get; set; } = Guid.CreateVersion7();
         public string Name { get; set; } = default!;
-        public ICollection<Product> Products { get; set; }
+        public ICollection<Product>? Products { get; set; }
 
     }
 }

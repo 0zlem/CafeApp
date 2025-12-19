@@ -14,13 +14,19 @@ using TS.Result;
 
 namespace CafeApp.Application.Command.OrderCommand
 {
-    public sealed record CreateOrderCommand(string TableCode, List<OrderItemDto> Items) : IRequest<Result<string>>;
+    public sealed record CreateOrderCommand(string TableId, List<OrderItemDto> Items) : IRequest<Result<string>>;
 
     internal sealed class CreateOrderCommandHandler(IOrderRepository orderRepository, IProductRepository productRepository, ITableRepository tableRepository, IUnitOfWork unitOfWork) : IRequestHandler<CreateOrderCommand, Result<string>>
     {
         public async Task<Result<string>> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
-            var table = await tableRepository.FirstOrDefaultAsync(t => t.CodeQR == request.TableCode, cancellationToken);
+            if (!Guid.TryParse(request.TableId, out var tableIdGuid))
+            {
+                return Result<string>.Failure("Geçersiz masa kimliği!!");
+            }
+
+            var table = await tableRepository.FirstOrDefaultAsync(t => t.Id == tableIdGuid, cancellationToken);
+
 
             if (table is null)
             {
@@ -29,7 +35,29 @@ namespace CafeApp.Application.Command.OrderCommand
 
             if (!table.IsActive)
             {
-                return Result<string>.Failure("Bu masa kullanıma kapalı!!");
+                table.IsActive = true;
+                table.UpdatedAt = DateTimeOffset.UtcNow;
+            }
+
+            var order = await orderRepository
+            .Where(o =>
+            o.TableId == table.Id &&
+            o.Status != OrderStatus.Paid &&
+            o.Status != OrderStatus.Cancelled)
+            .Include(o => o.OrderItems)
+            .FirstOrDefaultAsync(cancellationToken);
+
+            if (order is null)
+            {
+                order = new Order
+                {
+                    TableId = table.Id,
+                    Status = OrderStatus.Created,
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    OrderItems = new List<OrderItem>()
+                };
+
+                await orderRepository.AddAsync(order);
             }
 
             var productId = request.Items.Select(p => p.ProductId).ToList();
@@ -43,35 +71,31 @@ namespace CafeApp.Application.Command.OrderCommand
                 return Result<string>.Failure("Bazı ürünler bulunamadı!");
             }
 
-            Order order = new()
-            {
-                TableId = table.Id,
-                Status = OrderStatus.Created,
-                CreatedAt = DateTimeOffset.UtcNow,
-                OrderItems = new List<OrderItem>()
-            };
-
-            decimal totalAmount = 0;
-
             foreach (var item in request.Items)
             {
-                var product = products.First(p => p.Id == item.ProductId);
+                var existingItem = order.OrderItems
+             .FirstOrDefault(i => i.ProductId == item.ProductId);
 
-                var orderItem = new OrderItem
+                if (existingItem is not null)
                 {
-                    ProductId = product.Id,
-                    Quantity = item.Quantity,
-                    PriceAtOrder = product.Price
-                };
+                    existingItem.Quantity += item.Quantity;
+                }
+                else
+                {
+                    var product = products.First(p => p.Id == item.ProductId);
 
-                totalAmount += product.Price * item.Quantity;
-
-                order.OrderItems.Add(orderItem);
+                    order.OrderItems.Add(new OrderItem
+                    {
+                        ProductId = product.Id,
+                        Quantity = item.Quantity,
+                        PriceAtOrder = product.Price
+                    });
+                }
             }
 
-            order.TotalAmount = totalAmount;
+            order.TotalAmount = order.OrderItems
+           .Sum(i => i.PriceAtOrder * i.Quantity);
 
-            await orderRepository.AddAsync(order);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
             return Result<string>.Succeed("Sipariş başarıyla oluşturuldu.");

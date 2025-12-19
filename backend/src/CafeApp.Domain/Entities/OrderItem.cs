@@ -11,7 +11,7 @@ namespace CafeApp.Domain.Entities
 
         public Guid OrderId { get; set; }
         public Order Order { get; set; } = null!;
-
+        public Product? Product { get; set; }
         public Guid ProductId { get; set; }
         public int Quantity { get; set; }
         public decimal PriceAtOrder { get; set; }

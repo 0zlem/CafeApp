@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const AUTH_URL = "http://localhost:5134/auth";
+const AUTH_URL = `${process.env.NEXT_PUBLIC_API_URL}/auth`;
 
 axios.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");

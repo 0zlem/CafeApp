@@ -51,15 +51,15 @@ export default function LoginPage() {
       const user = await getUser();
       console.log("ME:", user);
 
-      if (user?.role === "Admin") {
+      localStorage.setItem("role", user.role);
+      localStorage.setItem("user", JSON.stringify(user));
+
+      if (user.role === "Admin") {
         router.push("/dashboard");
-        return;
       } else if (user.role === "Mutfak") {
-        router.push("/mutfak");
-        return;
+        router.push("/ordersKitchen");
       } else {
-        router.push("/garson");
-        return;
+        router.push("/ordersWaiter");
       }
     } catch (err: any) {
       console.error("Hata:", err);

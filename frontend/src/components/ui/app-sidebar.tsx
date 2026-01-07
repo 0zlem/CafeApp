@@ -1,9 +1,10 @@
+"use client";
 import {
   ChartColumnStacked,
+  ChefHat,
+  HandPlatter,
   Home,
   PackageSearch,
-  Search,
-  Settings,
   Table,
   UserCog,
 } from "lucide-react";
@@ -21,6 +22,9 @@ import {
 } from "@/components/ui/sidebar";
 import { NavUser } from "./nav-user";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+
+type Role = "Admin" | "Mutfak" | "Garson";
 
 const data = {
   items: [
@@ -28,30 +32,57 @@ const data = {
       title: "Dashboard",
       url: "/dashboard",
       icon: Home,
+      roles: ["Admin"],
+    },
+    {
+      title: "Orders",
+      url: "/ordersKitchen",
+      icon: ChefHat,
+      roles: ["Mutfak"],
+    },
+    {
+      title: "Orders",
+      url: "/ordersWaiter",
+      icon: HandPlatter,
+      roles: ["Garson"],
     },
     {
       title: "Categories",
       url: "/categories",
       icon: ChartColumnStacked,
+      roles: ["Admin"],
     },
     {
       title: "Products",
       url: "/products",
       icon: PackageSearch,
+      roles: ["Admin"],
     },
     {
       title: "Tables",
       url: "/tables",
       icon: Table,
+      roles: ["Admin"],
     },
     {
       title: "Users",
       url: "/users",
       icon: UserCog,
+      roles: ["Admin"],
     },
   ],
 };
 export function AppSidebar() {
+  const [userRole, setUserRole] = useState<Role | null>(null);
+
+  useEffect(() => {
+    const role = localStorage.getItem("role") as Role;
+    setUserRole(role);
+    console.log("role", role);
+  }, []);
+
+  if (!userRole) return null;
+
   return (
     <Sidebar variant="sidebar" collapsible="icon">
       <SidebarContent className="bg-[#fff6cc]">
@@ -70,19 +101,21 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {data.items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    className="bg-[#483C32] hover:bg-[#fcf8e7] text-[#fcf8e7] font-bold mt-2 min-h-10"
-                    asChild
-                  >
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {data.items
+                .filter((item) => userRole && item.roles.includes(userRole))
+                .map((item) => (
+                  <SidebarMenuItem key={item.url}>
+                    <SidebarMenuButton
+                      className="bg-[#483C32] hover:bg-[#fcf8e7] text-[#fcf8e7] font-bold mt-2 min-h-10"
+                      asChild
+                    >
+                      <Link href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

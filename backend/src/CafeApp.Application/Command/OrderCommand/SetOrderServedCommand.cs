@@ -4,43 +4,66 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using CafeApp.Application.Interfaces;
+using CafeApp.Domain.Dtos;
 using CafeApp.Domain.Enum;
 using GenericRepository;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using TS.Result;
 
 namespace CafeApp.Application.Command.OrderCommand
 {
-    public sealed record SetOrderServedCommand(Guid Id) : IRequest<Result<string>>;
+    public sealed record SetOrderServedCommand(Guid Id) : IRequest<Result<ActiveOrderDetailsDto>>;
 
-    internal sealed class SetOrderServedCommandHandler(IOrderRepository orderRepository, IHttpContextAccessor httpContextAccessor, IUnitOfWork unitOfWork) : IRequestHandler<SetOrderServedCommand, Result<string>>
+    internal sealed class SetOrderServedCommandHandler(IOrderRepository orderRepository, IHttpContextAccessor httpContextAccessor, IUnitOfWork unitOfWork) : IRequestHandler<SetOrderServedCommand, Result<ActiveOrderDetailsDto>>
     {
-        public async Task<Result<string>> Handle(SetOrderServedCommand request, CancellationToken cancellationToken)
+        public async Task<Result<ActiveOrderDetailsDto>> Handle(SetOrderServedCommand request, CancellationToken cancellationToken)
         {
             var httpContext = httpContextAccessor.HttpContext;
             var userRole = httpContext?.User.FindFirstValue(ClaimTypes.Role);
             if (userRole != UserRole.Garson.ToString())
-                return Result<string>.Failure("Bu işlem için yetkiye sahip olmalısınız!");
+                return Result<ActiveOrderDetailsDto>.Failure("Bu işlem için yetkiye sahip olmalısınız!");
 
-            var order = await orderRepository.FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken);
+            var order = await orderRepository
+           .AsQueryable()
+           .Include(o => o.Table)
+           .Include(o => o.OrderItems)
+           .ThenInclude(oi => oi.Product)
+           .FirstOrDefaultAsync(o => o.Id == request.Id, cancellationToken);
 
             if (order is null)
             {
-                return Result<string>.Failure("Sipariş bulunamadı!!");
+                return Result<ActiveOrderDetailsDto>.Failure("Sipariş bulunamadı!!");
             }
 
             if (order.Status != OrderStatus.Ready)
             {
-                return Result<string>.Failure("Sipariş hazır değil!!");
+                return Result<ActiveOrderDetailsDto>.Failure("Sipariş hazır değil!!");
             }
 
             order.Status = OrderStatus.Served;
             order.UpdatedAt = DateTimeOffset.UtcNow;
 
+            orderRepository.Update(order);
+
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            return Result<string>.Succeed("Sipariş servis edildi...");
+            var orderUpdate = new ActiveOrderDetailsDto
+            {
+                Id = order.Id,
+                Status = (int)order.Status,
+                TableName = order.Table!.Name,
+                TotalAmount = order.TotalAmount,
+                Items = order.OrderItems.Select(i => new ActiveOrderItemDetailsDto
+                {
+                    ProductName = i.Product!.Name,
+                    Quantity = i.Quantity,
+                    Price = i.PriceAtOrder
+                }).ToList()
+            };
+
+            return Result<ActiveOrderDetailsDto>.Succeed(orderUpdate);
         }
     }
 }

@@ -13,7 +13,11 @@ using TS.Result;
 
 namespace CafeApp.Application.Command.OrderCommand
 {
-    public sealed record SetOrderPaidCommand(Guid Id) : IRequest<Result<string>>;
+    public sealed record SetOrderPaidCommand(
+    Guid Id,
+    PaymentType PaymentType
+) : IRequest<Result<string>>;
+
 
     internal sealed class SetOrderPaidCommandHandler(IHttpContextAccessor httpContextAccessor, IOrderRepository orderRepository, ITableRepository tableRepository, IUnitOfWork unitOfWork) : IRequestHandler<SetOrderPaidCommand, Result<string>>
     {
@@ -37,6 +41,7 @@ namespace CafeApp.Application.Command.OrderCommand
             }
 
             order.Status = OrderStatus.Paid;
+            order.PaymentType = request.PaymentType;
             order.UpdatedAt = DateTimeOffset.UtcNow;
 
             var table = await tableRepository
@@ -55,11 +60,14 @@ namespace CafeApp.Application.Command.OrderCommand
             foreach (var o in orders)
             {
                 o.Status = OrderStatus.Paid;
+                order.PaymentType = request.PaymentType;
                 o.UpdatedAt = DateTimeOffset.UtcNow;
             }
 
             table.IsActive = false;
             table.UpdatedAt = DateTimeOffset.UtcNow;
+
+            orderRepository.Update(order);
 
             await unitOfWork.SaveChangesAsync(cancellationToken);
 

@@ -2,6 +2,21 @@ import axios from "axios";
 
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/orders`;
 
+export interface KitchenOrder {
+  id: string;
+  tableName: string;      
+  totalAmount: number;    
+  status: number;        
+  items: KitchenOrderItem[];
+}
+
+export interface KitchenOrderItem {
+  productName: string;
+  quantity: number;
+  price: number;
+}
+
+
 export const createOrder = async (data: {
   tableId: string;
   items: {
@@ -46,6 +61,24 @@ export const getActiveOrdersByTable = async (tableId: string) => {
   }
 };
 
+export const getActiveOrders = async ()=> {
+    try {
+    const token = localStorage.getItem("token");
+    const response = await axios.get(`${API_URL}/active`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data.data;
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      throw error.response?.data || error.message;
+    }
+    throw error;
+  }
+}
+
 export const setOrderPreparing = async (orderId: string) => {
   try {
   const token = localStorage.getItem("token");
@@ -59,7 +92,7 @@ export const setOrderPreparing = async (orderId: string) => {
       },
     }
     );
-    return response.data;
+    return response.data.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw error.response?.data || error.message;
@@ -81,7 +114,7 @@ export const setOrderReady = async (orderId: string) => {
       },
     }
     );
-    return response.data;
+    return response.data.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw error.response?.data || error.message;
@@ -103,7 +136,7 @@ export const setOrderServed = async (orderId: string) => {
       },
      }
     );
-    return response.data;
+    return response.data.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       throw error.response?.data || error.message;
@@ -112,24 +145,24 @@ export const setOrderServed = async (orderId: string) => {
   }
 };
 
-export const setOrderPaid = async (orderId: string) => {
-  try {
+export const setOrderPaid = async (
+  orderId: string,
+  paymentType: number
+) => {
   const token = localStorage.getItem("token");
 
-    const response = await axios.put(
-      `${API_URL}/paid/${orderId}`,
-      {},
-      {
+  const response = await axios.put(
+    `${API_URL}/paid/${orderId}`,
+    {
+      paymentType,
+    },
+    {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     }
-    );
-    return response.data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw error.response?.data || error.message;
-    }
-    throw error;
-  }
+  );
+
+  return response.data;
 };
+

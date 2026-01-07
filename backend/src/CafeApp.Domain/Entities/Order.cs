@@ -11,6 +11,7 @@ namespace CafeApp.Domain.Entities
         public Guid? TableId { get; set; }
         public Table? Table { get; set; }
         public OrderStatus Status { get; set; } = OrderStatus.Created;
+        public PaymentType? PaymentType { get; set; }
         public decimal TotalAmount { get; set; }
         public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
         public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;

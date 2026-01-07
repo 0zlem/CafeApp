@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CafeApp.Application.Command.OrderCommand;
 using CafeApp.Application.Queries.OrderQueries;
+using CafeApp.Domain.Dtos;
 using CafeApp.Domain.Entities;
 using MediatR;
 using TS.Result;
@@ -32,9 +33,9 @@ namespace CafeApp.WebAPI.Modules
 
             }).Produces<Result<string>>();
 
-            groupBuilder.MapPut("/paid/{id:guid}", async (ISender sender, Guid id, CancellationToken cancellationToken) =>
+            groupBuilder.MapPut("/paid/{id:guid}", async (ISender sender, Guid id, SetOrderPaidCommand request, CancellationToken cancellationToken) =>
             {
-                var response = await sender.Send(new SetOrderPaidCommand(id), cancellationToken);
+                var response = await sender.Send(new SetOrderPaidCommand(id, request.PaymentType), cancellationToken);
 
                 return response.IsSuccessful ? Results.Ok(response) : Results.BadRequest(response);
 
@@ -75,6 +76,13 @@ namespace CafeApp.WebAPI.Modules
                 var response = await sender.Send(new GetActiveOrdersByTableQuery(tableId), cancellationToken);
                 return response.IsSuccessful ? Results.Ok(response) : Results.BadRequest(response);
             }).Produces<Result<List<Order>>>();
+
+            groupBuilder.MapGet("/active", async (ISender sender, CancellationToken cancellationToken) =>
+            {
+                var response = await sender.Send(new GetActiveOrdersQuery(), cancellationToken);
+                return response.IsSuccessful ? Results.Ok(response) : Results.BadRequest(response);
+            }).Produces<Result<List<ActiveOrderDetailsDto>>>();
+
         }
     }
 }

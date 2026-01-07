@@ -2,63 +2,59 @@
 
 import { useEffect, useState } from "react";
 import {
-  Bar,
   BarChart,
+  Bar,
   CartesianGrid,
   XAxis,
+  YAxis,
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
 import { getTopProducts } from "@/services/DashboardService";
 
-export interface TopProduct {
-  productId: string;
-  productName: string;
-  quantitySold: number;
-}
-
 export default function PopularProducts() {
-  const [data, setData] = useState<TopProduct[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchTopProducts = async () => {
-      try {
-        const res = await getTopProducts();
-        setData(res);
-      } catch (err) {
-        console.error("Error fetching top products:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTopProducts();
+    getTopProducts().then(setData);
   }, []);
 
-  if (loading) return <p>Loading top products...</p>;
-  if (!data.length) return <p>No top products found.</p>;
-
   return (
-    <div className="p-4 bg-[#fff6cc] rounded-lg shadow-lg w-full h-[350px]">
+    <div className="bg-[#fff6cc] rounded-xl shadow-lg p-4 h-[360px] flex flex-col">
       <h2 className="font-bold text-lg mb-4 text-center">
         Top Selling Products
       </h2>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={data}
-          layout="vertical"
-          margin={{ left: 50, right: 20 }}
-        >
-          <CartesianGrid vertical={false} strokeDasharray="3 3" />
-          <XAxis type="number" tickLine={false} />
-          <Tooltip />
-          <Bar
-            dataKey="quantitySold"
-            fill="var(--color-primary)"
-            radius={[4, 4, 0, 0]}
-          />
-        </BarChart>
-      </ResponsiveContainer>
+
+      <div className="flex-1">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={data}
+            layout="vertical"
+            margin={{ top: 10, right: 20, left: 120, bottom: 10 }}
+          >
+            <CartesianGrid horizontal={false} strokeDasharray="3 3" />
+
+            <YAxis
+              dataKey="productName"
+              type="category"
+              width={110}
+              tickLine={false}
+              axisLine={false}
+            />
+
+            <XAxis type="number" tickLine={false} axisLine={false} />
+
+            <Tooltip />
+
+            <Bar
+              dataKey="quantitySold"
+              barSize={18}
+              radius={[0, 6, 6, 0]}
+              fill="#483C32"
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

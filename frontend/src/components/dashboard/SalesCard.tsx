@@ -1,72 +1,60 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LineChart, Line, CartesianGrid, XAxis } from "recharts";
 import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartConfig,
-} from "@/components/ui/chart";
-
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import { toast } from "sonner";
 import { getSalesOverview, SalesOverview } from "@/services/DashboardService";
-
-const chartConfig: ChartConfig = {
-  totalOrders: { label: "Total Orders", color: "var(--color-primary)" },
-  totalRevenue: { label: "Revenue", color: "var(--color-secondary)" },
-};
 
 export default function SalesCard() {
   const [data, setData] = useState<SalesOverview[]>([]);
 
   useEffect(() => {
-    const fetchSales = async () => {
-      try {
-        const sales = await getSalesOverview();
-
+    getSalesOverview()
+      .then((sales) =>
         setData(
           sales.map((s) => ({
             ...s,
             date: new Date(s.date).toLocaleDateString("tr-TR"),
           }))
-        );
-      } catch (err) {
-        console.error(err);
-        toast.error("Satış verileri yüklenirken hata oluştu!");
-      }
-    };
-    fetchSales();
+        )
+      )
+      .catch(() => toast.error("Satış verileri yüklenemedi"));
   }, []);
 
   return (
-    <div className="bg-gray-300">
-      <ChartContainer config={chartConfig}>
-        <LineChart data={data} margin={{ left: 12, right: 12 }}>
-          <CartesianGrid vertical={false} />
-          <XAxis
-            dataKey="date"
-            tickLine={false}
-            axisLine={false}
-            tickMargin={8}
-          />
-          <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-          <Line
-            dataKey="totalOrders"
-            type="monotone"
-            stroke="#1E40AF"
-            strokeWidth={2}
-            dot={{ r: 3 }}
-          />
-          <Line
-            dataKey="totalRevenue"
-            type="monotone"
-            stroke="#F97316"
-            strokeWidth={2}
-            dot={{ r: 3 }}
-          />
-        </LineChart>
-      </ChartContainer>
+    <div className="bg-[#fff6cc] rounded-xl shadow-lg p-4 h-[360px] flex flex-col">
+      <h2 className="font-bold text-lg mb-2 text-center">Sales Overview</h2>
+
+      <div className="flex-1">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data}>
+            <CartesianGrid vertical={false} strokeDasharray="3 3" />
+            <XAxis dataKey="date" tickLine={false} />
+            <Tooltip />
+            <Line
+              type="monotone"
+              dataKey="totalOrders"
+              stroke="#1E40AF"
+              strokeWidth={2}
+              dot={{ r: 3 }}
+            />
+            <Line
+              type="monotone"
+              dataKey="totalRevenue"
+              stroke="#F97316"
+              strokeWidth={2}
+              dot={{ r: 3 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

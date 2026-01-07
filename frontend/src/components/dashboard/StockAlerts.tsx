@@ -2,66 +2,70 @@
 
 import { useEffect, useState } from "react";
 import {
-  Bar,
   BarChart,
+  Bar,
   CartesianGrid,
   XAxis,
+  YAxis,
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { getStockOverview, StockOverview } from "@/services/DashboardService";
+import { getStockOverview } from "@/services/DashboardService";
 
 export default function StockAlerts() {
-  const [data, setData] = useState<StockOverview[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchStock = async () => {
-      try {
-        const res = await getStockOverview();
-        setData(res);
-      } catch (err) {
-        console.error("Error fetching stock overview:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchStock();
+    getStockOverview().then(setData);
   }, []);
 
-  if (loading) return <p>Loading stock data...</p>;
-  if (!data.length) return <p>No stock data found.</p>;
+  const lowStock = data.filter((x) => x.isLowStock);
 
   return (
-    <div className="p-4 bg-[#fff6cc] rounded-lg shadow-lg w-full h-[350px]">
-      <h2 className="font-bold text-lg mb-4 text-center">Stock Overview</h2>
+    <div className="bg-[#fff6cc] rounded-xl shadow-lg  h-[680px] flex flex-col">
+      <h2 className="font-bold text-lg mb-2 text-center">Stock Overview</h2>
 
-      <ul className="mb-4">
-        {data
-          .filter((item) => item.isLowStock)
-          .map((item) => (
-            <li key={item.productId} className="text-red-600">
-              Warning: {item.productName} stock is low ({item.stock})
-            </li>
+      {lowStock.length > 0 && (
+        <div className="mb-4 text-sm text-red-600">
+          {lowStock.map((i) => (
+            <div key={i.productId}>
+              ⚠ {i.productName} ({i.stock})
+            </div>
           ))}
-      </ul>
+        </div>
+      )}
 
-      <ResponsiveContainer width="100%" height="70%">
-        <BarChart
-          data={data}
-          layout="vertical"
-          margin={{ left: 50, right: 20 }}
-        >
-          <CartesianGrid vertical={false} strokeDasharray="3 3" />
-          <XAxis type="number" tickLine={false} />
-          <Tooltip />
-          <Bar
-            dataKey="stock"
-            fill="var(--color-primary)"
-            radius={[4, 4, 0, 0]}
-          />
-        </BarChart>
-      </ResponsiveContainer>
+      <div className="flex-1">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={data}
+            layout="vertical"
+            margin={{ top: 10, right: 20, left: 120, bottom: 10 }}
+          >
+            <CartesianGrid horizontal={false} strokeDasharray="3 3" />
+
+            <YAxis
+              dataKey="productName"
+              type="category"
+              width={110}
+              tickLine={true}
+              axisLine={true}
+            />
+
+            <XAxis type="number" tickLine={true} axisLine={false} />
+
+            <Tooltip />
+
+            <Bar
+              className="p-10"
+              dataKey="stock"
+              barSize={18}
+              radius={[0, 6, 10, 0]}
+              fill="#09053D"
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

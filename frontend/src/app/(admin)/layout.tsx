@@ -8,11 +8,17 @@ export default function AdminLayout({
 }) {
   return (
     <SidebarProvider>
-      <AppSidebar />
-      <main>
-        <SidebarTrigger />
-        {children}
-      </main>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+
+        <main className="flex-1 min-w-0">
+          <div className="p-4">
+            <SidebarTrigger />
+          </div>
+
+          <div className="w-full p-6">{children}</div>
+        </main>
+      </div>
     </SidebarProvider>
   );
 }

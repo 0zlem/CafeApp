@@ -245,14 +245,14 @@ export default function OrdersKanban() {
 
                     <div className="flex gap-3 mt-4">
                       <Button
-                        className="flex-1 bg-green-600 cursor-pointer"
+                        className="flex-1 bg-green-800 cursor-pointer"
                         onClick={() => handleMoveToPaid(order, 0)}
                       >
                         💵 Nakit
                       </Button>
 
                       <Button
-                        className="flex-1 bg-blue-600 cursor-pointer"
+                        className="flex-1 bg-blue-800 cursor-pointer"
                         onClick={() => handleMoveToPaid(order, 1)}
                       >
                         💳 Kart

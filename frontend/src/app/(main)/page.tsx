@@ -2,6 +2,7 @@
 import { useCart } from "@/components/CardContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { getActiveOrdersByTable } from "@/services/OrderService";
 import { getProducts } from "@/services/ProductService";
 import { activateTable } from "@/services/TableService";
 import Link from "next/link";
@@ -24,15 +25,27 @@ export default function Home() {
     activateTable(tableId)
       .then(() => {
         localStorage.setItem("tableId", tableId);
-        setHasActiveOrder(true);
         if (tableName) {
           localStorage.setItem("tableName", tableName);
         }
       })
       .catch(() => {
-        setHasActiveOrder(false);
         toast.error("Masa aktifleştirilemedi!");
       });
+  }, [tableId]);
+
+  useEffect(() => {
+    if (!tableId) return;
+
+    getActiveOrdersByTable(tableId)
+      .then((res) => {
+        if (res && res.id) {
+          setHasActiveOrder(true);
+        } else {
+          setHasActiveOrder(false);
+        }
+      })
+      .catch(() => setHasActiveOrder(false));
   }, [tableId]);
 
   useEffect(() => {

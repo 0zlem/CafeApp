@@ -48,6 +48,8 @@ export default function LoginPage() {
 
       localStorage.setItem("token", token);
 
+      document.cookie = `access_token=${token}; path=/`;
+
       const user = await getUser();
       console.log("ME:", user);
 
